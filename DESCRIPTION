@@ -40,4 +40,5 @@ Collate:
 	perimeter.R
 	clockwise.R
 	geod.R
+	collection_extract.R
 RoxygenNote: 6.0.1

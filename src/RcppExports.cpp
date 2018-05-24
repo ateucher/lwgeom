@@ -246,6 +246,18 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// CPL_collection_extract
+Rcpp::List CPL_collection_extract(Rcpp::List sfc, int type);
+RcppExport SEXP _lwgeom_CPL_collection_extract(SEXP sfcSEXP, SEXP typeSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< Rcpp::List >::type sfc(sfcSEXP);
+    Rcpp::traits::input_parameter< int >::type type(typeSEXP);
+    rcpp_result_gen = Rcpp::wrap(CPL_collection_extract(sfc, type));
+    return rcpp_result_gen;
+END_RCPP
+}
 // CPL_proj_version
 std::string CPL_proj_version(bool b);
 RcppExport SEXP _lwgeom_CPL_proj_version(SEXP bSEXP) {
@@ -293,6 +305,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_lwgeom_CPL_perimeter", (DL_FUNC) &_lwgeom_CPL_perimeter, 2},
     {"_lwgeom_CPL_is_polygon_cw", (DL_FUNC) &_lwgeom_CPL_is_polygon_cw, 1},
     {"_lwgeom_CPL_force_polygon_cw", (DL_FUNC) &_lwgeom_CPL_force_polygon_cw, 1},
+    {"_lwgeom_CPL_collection_extract", (DL_FUNC) &_lwgeom_CPL_collection_extract, 2},
     {"_lwgeom_CPL_proj_version", (DL_FUNC) &_lwgeom_CPL_proj_version, 1},
     {"_lwgeom_CPL_linesubstring", (DL_FUNC) &_lwgeom_CPL_linesubstring, 4},
     {NULL, NULL, 0}

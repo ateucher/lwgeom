@@ -223,7 +223,6 @@ Rcpp::NumericVector CPL_perimeter(Rcpp::List sfc, bool do2d = false) {
 	return out;
 }
 
-
 // [[Rcpp::export]]
 Rcpp::LogicalVector CPL_is_polygon_cw(Rcpp::List sfc) {
   std::vector<LWGEOM *> lwgeom_cw = lwgeom_from_sfc(sfc);
@@ -243,4 +242,37 @@ Rcpp::List CPL_force_polygon_cw(Rcpp::List sfc) {
     lwgeom_force_clockwise(lwgeom_cw[i]);
   }
   return sfc_from_lwgeom(lwgeom_cw);
+}
+
+// [[Rcpp::export]]
+Rcpp::List CPL_collection_extract(Rcpp::List sfc, int type = 1) {
+  
+  std::vector<LWGEOM *> lwgeom_v = lwgeom_from_sfc(sfc);
+  std::vector<LWGEOM *> lwcol(lwgeom_v.size());
+  for (size_t i = 0; i < lwgeom_v.size(); i++) {
+    int lwgeom_type = lwgeom_v[i]->type;
+    /* Mirror non-collections right back */
+    if ( ! lwgeom_is_collection(lwgeom_v[i]) )
+    {
+      /* Non-collections of the matching type go back */
+      if(lwgeom_type == type)
+      {
+        //lwgeom_free(lwgeom_v[i]);
+        lwcol[i] = lwgeom_v[i];
+      }
+      /* Others go back as EMPTY */
+      else
+      {
+        lwcol[i] = lwgeom_construct_empty(type, lwgeom_v[i]->srid, FLAGS_GET_Z(lwgeom_v[i]->flags), FLAGS_GET_M(lwgeom_v[i]->flags));
+      }
+    }
+    else
+    {
+      lwcol[i] = lwcollection_as_lwgeom(lwcollection_extract((LWCOLLECTION*)lwgeom_v[i], type));
+    }
+    
+    //lwgeom_free(lwgeom_v[i]);
+    //lwgeom_free(lwcol[i]);
+  }
+  return sfc_from_lwgeom(lwcol);
 }
