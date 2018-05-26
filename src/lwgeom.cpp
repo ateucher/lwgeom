@@ -251,28 +251,34 @@ Rcpp::List CPL_collection_extract(Rcpp::List sfc, int type = 1) {
   std::vector<LWGEOM *> lwcol(lwgeom_v.size());
   for (size_t i = 0; i < lwgeom_v.size(); i++) {
     int lwgeom_type = lwgeom_v[i]->type;
-    /* Mirror non-collections right back */
-    if ( ! lwgeom_is_collection(lwgeom_v[i]) )
-    {
-      /* Non-collections of the matching type go back */
-      if(lwgeom_type == type)
-      {
-        //lwgeom_free(lwgeom_v[i]);
+    // If not a collection, check if matching type
+    if (!lwgeom_is_collection(lwgeom_v[i])) {
+      // Non-collections of the matching type returned unmodified
+      if(lwgeom_type == type) {
         lwcol[i] = lwgeom_v[i];
-      }
-      /* Others go back as EMPTY */
-      else
-      {
+      } else {
+        // Others returned as EMPTY
         lwcol[i] = lwgeom_construct_empty(type, lwgeom_v[i]->srid, FLAGS_GET_Z(lwgeom_v[i]->flags), FLAGS_GET_M(lwgeom_v[i]->flags));
       }
-    }
-    else
-    {
+    } else {// Extract
       lwcol[i] = lwcollection_as_lwgeom(lwcollection_extract((LWCOLLECTION*)lwgeom_v[i], type));
     }
-    
-    //lwgeom_free(lwgeom_v[i]);
-    //lwgeom_free(lwcol[i]);
+    //reduce empty multi objects to singles
+    if (lwgeom_is_empty(lwcol[i])) {
+      int lwcoltype = lwcol[i]->type;
+      if (lwcoltype == MULTIPOINTTYPE) {
+        Rprintf("%d - multipoint\n", i);
+        lwcol[i] = lwgeom_construct_empty(1, lwcol[i]->srid, FLAGS_GET_Z(lwcol[i]->flags), FLAGS_GET_M(lwcol[i]->flags));
+      } else if (lwcoltype == MULTILINETYPE) {
+        Rprintf("%d - multiline\n", i);
+        lwcol[i] = lwgeom_construct_empty(2, lwcol[i]->srid, FLAGS_GET_Z(lwcol[i]->flags), FLAGS_GET_M(lwcol[i]->flags));
+      } else if (lwcoltype == MULTIPOLYGONTYPE) {
+        Rprintf("%d - multipoly\n", i);
+        lwcol[i] = lwgeom_construct_empty(3, lwcol[i]->srid, FLAGS_GET_Z(lwcol[i]->flags), FLAGS_GET_M(lwcol[i]->flags));
+      }
+    } else {
+      lwcol[i] = lwgeom_homogenize(lwcol[i]);
+    }
   }
   return sfc_from_lwgeom(lwcol);
 }

@@ -30,25 +30,25 @@ cc <- rbind(aa, bb)
 test_that("st_collection_extract2 works with sfg objects", {
   expect_is(st_collection_extract2(i, "POLYGON"), "MULTIPOLYGON")
   expect_is(st_collection_extract2(j, "POLYGON"), "MULTIPOLYGON")
-  expect_is(st_collection_extract2(i, "POINT"), "MULTIPOINT")
-  expect_is(st_collection_extract2(i, "LINESTRING"), "MULTILINESTRING")
+  expect_is(st_collection_extract2(i, "POINT"), "POINT")
+  expect_is(st_collection_extract2(i, "LINESTRING"), "LINESTRING")
 })
 
 test_that("st_collection_extract2 works with sfc objects", {
   expect_is(st_collection_extract2(st_geometry(aa), "POLYGON"), "sfc_MULTIPOLYGON")
-  expect_is(st_collection_extract2(st_geometry(aa), "LINESTRING"), "sfc_MULTILINESTRING")
-  expect_is(st_collection_extract2(st_geometry(aa), "POINT"), "sfc_MULTIPOINT")
-  expect_is(st_collection_extract2(st_geometry(bb), "POINT"), "sfc_GEOMETRY")
-  expect_is(st_collection_extract2(st_geometry(cc), "POLYGON"), "sfc_GEOMETRY")
+  expect_is(st_collection_extract2(st_geometry(aa), "LINESTRING"), "sfc_LINESTRING")
+  expect_is(st_collection_extract2(st_geometry(aa), "POINT"), "sfc_POINT")
+  expect_is(st_collection_extract2(st_geometry(bb), "POINT"), "sfc_POINT")
+  expect_is(st_collection_extract2(st_geometry(cc), "POLYGON"), "sfc_MULTIPOLYGON")
 })
 
 
 test_that("st_collection_extract2 works with sf objects", {
   expect_is(st_geometry(st_collection_extract2(aa, "POLYGON")), "sfc_MULTIPOLYGON")
-  expect_is(st_geometry(st_collection_extract2(aa, "LINESTRING")), "sfc_MULTILINESTRING")
-  expect_is(st_geometry(st_collection_extract2(aa, "POINT")), "sfc_MULTIPOINT")
-  expect_is(st_geometry(st_collection_extract2(bb, "POLYGON")), "sfc_GEOMETRY")
-  expect_is(st_geometry(st_collection_extract2(cc, "POLYGON")), "sfc_GEOMETRY")
+  expect_is(st_geometry(st_collection_extract2(aa, "LINESTRING")), "sfc_LINESTRING")
+  expect_is(st_geometry(st_collection_extract2(aa, "POINT")), "sfc_POINT")
+  expect_is(st_geometry(st_collection_extract2(bb, "POLYGON")), "sfc_MULTIPOLYGON")
+  expect_is(st_geometry(st_collection_extract2(cc, "POLYGON")), "sfc_MULTIPOLYGON")
 })
 
 test_that("st_collection_extract2 behaves with unexpected inputs", {
@@ -68,5 +68,5 @@ test_that("st_collection_extract2 behaves with unexpected inputs", {
   )))
   expect_length(empty, 0L)
   expect_is(empty, "sfg")
-  expect_true(all(st_is(empty, "MULTIPOLYGON")))
+  expect_true(all(st_is(empty, "POLYGON")))
 })
